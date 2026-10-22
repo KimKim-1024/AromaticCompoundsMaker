@@ -250,18 +250,19 @@
       box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
     }
 
+    /* ログ表示エリアの修正（長文でも一番上からスクロール可能に） */
     .log-container {
       background: #090d16;
       border: 1px solid var(--card-border);
       border-radius: 10px;
       padding: 8px 12px;
       font-size: 0.75rem;
-      min-height: 52px;
-      max-height: 75px;
+      height: 62px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
+      gap: 4px;
     }
     .log-line {
       line-height: 1.4;
@@ -468,6 +469,7 @@
       cursor: pointer;
     }
 
+    /* キシレン選択リストのスタイル（シンプル・説明文なし） */
     .isomer-choice-list {
       display: flex;
       flex-direction: column;
@@ -478,10 +480,11 @@
       background: #0f172a;
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 10px 14px;
+      padding: 10px 18px;
       display: flex;
       align-items: center;
-      gap: 14px;
+      justify-content: center;
+      gap: 16px;
       color: #fff;
       cursor: pointer;
       transition: 0.15s;
@@ -490,23 +493,11 @@
       border-color: var(--accent);
       background: #1e293b;
     }
-    .isomer-btn-text {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 2px;
-    }
     .isomer-btn-title {
-      font-size: 0.88rem;
+      font-size: 0.95rem;
       font-weight: 700;
       color: #fff;
-    }
-    .isomer-btn-sub {
-      font-size: 0.72rem;
-      color: var(--text-sub);
-      white-space: nowrap;
+      letter-spacing: 0.5px;
     }
 
     .toast {
@@ -625,9 +616,7 @@
       <div style="padding:10px 16px; font-size:0.75rem; color:var(--text-sub); border-bottom:1px solid var(--card-border);">
         トルエンのアルキル化により3種類のキシレン異性体（o-, m-, p-）が生成し、<b>すべて図鑑に登録</b>されました！続けて実験台に乗せる異性体を選択してください：
       </div>
-      <div class="isomer-choice-list" id="isomerChoiceContainer">
-        <!-- JSでSVGと整ったテキストが動的に注入されます -->
-      </div>
+      <div class="isomer-choice-list" id="isomerChoiceContainer"></div>
     </div>
   </div>
 
@@ -635,8 +624,9 @@
 
   <script>
     /* ========================================================
-       1. SVGグラフィック定義（ナフタレン正六角形比率調整版）
+       1. SVGグラフィック定義（ナフタレン・アゾ・PET 完全幾何学修正版）
        ======================================================== */
+    // 標準ベンゼン環（上下が角）：中心(60, 60)、半径24
     const SVG_CORE = `
       <polygon points="60,36 81,48 81,72 60,84 39,72 39,48" stroke="#38bdf8" stroke-width="2.5" fill="none"/>
       <circle cx="60" cy="60" r="14" stroke="#38bdf8" stroke-width="2.2" fill="none"/>
@@ -650,15 +640,12 @@
           return `${base}${SVG_CORE}${end}`;
 
         case "naphthalene":
-          // 正確な正六角形比率のナフタレン
-          // 左環: 中心(42,60) R=20.5 -> 頂点: (32,42) (53,42) (63,60) (53,78) (32,78) (21,60)
-          // 右環: 中心(78,60) R=20.5 -> 頂点: (74,42) (95,42) (105,60) (95,78) (74,78) (63,60)
-          // 共有辺: (63,42)-(63,78) を水平対向（共有頂点 63,42 と 63,78）
+          // ナフタレン: 2つの六角形それぞれ「上下が角」、中央の垂直辺(60,48)-(60,72)を綺麗に共有
           return `${base}
-            <polygon points="41,43 63,43 74,60 63,77 41,77 30,60" stroke="#38bdf8" stroke-width="2.3" fill="none"/>
-            <polygon points="63,43 85,43 96,60 85,77 63,77 74,60" stroke="#38bdf8" stroke-width="2.3" fill="none"/>
-            <circle cx="48.5" cy="60" r="10" stroke="#38bdf8" stroke-width="1.8" fill="none"/>
-            <circle cx="77.5" cy="60" r="10" stroke="#38bdf8" stroke-width="1.8" fill="none"/>
+            <polygon points="39.2,36 60,48 60,72 39.2,84 18.4,72 18.4,48" stroke="#38bdf8" stroke-width="2.3" fill="none"/>
+            <polygon points="80.8,36 101.6,48 101.6,72 80.8,84 60,72 60,48" stroke="#38bdf8" stroke-width="2.3" fill="none"/>
+            <circle cx="39.2" cy="60" r="13" stroke="#38bdf8" stroke-width="1.8" fill="none"/>
+            <circle cx="80.8" cy="60" r="13" stroke="#38bdf8" stroke-width="1.8" fill="none"/>
           ${end}`;
 
         case "toluene":
@@ -803,16 +790,23 @@
           ${end}`;
 
         case "p_hydroxyazobenzene":
+          // p-ヒドロキシアゾベンゼン: 水平な六角形（左右が角）同士が -N=N- でパラ位連結
+          // 左環: 中心(24, 60), R=14 -> 左角(10,60), 右角(38,60)
+          // 右環: 中心(84, 60), R=14 -> 左角(70,60), 右角(98,60)
           return `${base}
-            <polygon points="26,45 38,38 38,52 26,59 14,52 14,38" stroke="#38bdf8" stroke-width="2" fill="none"/>
-            <circle cx="26" cy="48.5" r="7.5" stroke="#38bdf8" stroke-width="1.6" fill="none"/>
-            <line x1="38" y1="45" x2="48" y2="45" stroke="#38bdf8" stroke-width="2"/>
-            <text x="60" y="46" fill="#fbbf24" font-size="7.5" font-weight="bold" text-anchor="middle" dominant-baseline="central">-N=N-</text>
-            <line x1="72" y1="45" x2="82" y2="45" stroke="#38bdf8" stroke-width="2"/>
-            <polygon points="94,45 106,38 106,52 94,59 82,52 82,38" stroke="#38bdf8" stroke-width="2" fill="none"/>
-            <circle cx="94" cy="48.5" r="7.5" stroke="#38bdf8" stroke-width="1.6" fill="none"/>
-            <line x1="94" y1="59" x2="94" y2="70" stroke="#38bdf8" stroke-width="2"/>
-            <text x="94" y="80" fill="#34d399" font-size="8.5" text-anchor="middle" font-weight="bold" dominant-baseline="central">OH</text>
+            <!-- 左環（角が左右） -->
+            <polygon points="10,60 17,47.9 31,47.9 38,60 31,72.1 17,72.1" stroke="#38bdf8" stroke-width="2.2" fill="none"/>
+            <circle cx="24" cy="60" r="8" stroke="#38bdf8" stroke-width="1.6" fill="none"/>
+            <!-- 中央アゾ結合 -N=N- -->
+            <line x1="38" y1="60" x2="44" y2="60" stroke="#38bdf8" stroke-width="2"/>
+            <text x="54" y="60" fill="#fbbf24" font-size="8" font-weight="bold" text-anchor="middle" dominant-baseline="central">-N=N-</text>
+            <line x1="64" y1="60" x2="70" y2="60" stroke="#38bdf8" stroke-width="2"/>
+            <!-- 右環（角が左右） -->
+            <polygon points="70,60 77,47.9 91,47.9 98,60 91,72.1 77,72.1" stroke="#38bdf8" stroke-width="2.2" fill="none"/>
+            <circle cx="84" cy="60" r="8" stroke="#38bdf8" stroke-width="1.6" fill="none"/>
+            <!-- パラ位 OH -->
+            <line x1="98" y1="60" x2="105" y2="60" stroke="#38bdf8" stroke-width="2"/>
+            <text x="113" y="60" fill="#34d399" font-size="8.5" font-weight="bold" text-anchor="middle" dominant-baseline="central">OH</text>
           ${end}`;
 
         case "tnt":
@@ -887,16 +881,26 @@
           ${end}`;
 
         case "pet":
+          // PET: ベンゼン環の角を左右に向け、左角(パラ位)から-CO-、右角(パラ位)から-COO-CH₂CH₂-O-
+          // 環中心(52, 55), 半径13 -> 左角(39, 55), 右角(65, 55)
           return `${base}
-            <text x="12" y="55" fill="#94a3b8" font-size="20" font-weight="bold" dominant-baseline="central">[</text>
-            <text x="108" y="55" fill="#94a3b8" font-size="20" font-weight="bold" dominant-baseline="central">]</text>
-            <text x="114" y="65" fill="#38bdf8" font-size="8" font-weight="bold">n</text>
-            <text x="24" y="55" fill="#38bdf8" font-size="6.5" font-weight="bold" dominant-baseline="central">-CO-</text>
-            <polygon points="60,42 70,48 70,62 60,68 50,62 50,48" stroke="#38bdf8" stroke-width="1.8" fill="none"/>
-            <circle cx="60" cy="55" r="7" stroke="#38bdf8" stroke-width="1.5" fill="none"/>
-            <line x1="38" y1="55" x2="50" y2="55" stroke="#38bdf8" stroke-width="1.8"/>
-            <line x1="70" y1="55" x2="78" y2="55" stroke="#38bdf8" stroke-width="1.8"/>
-            <text x="94" y="55" fill="#34d399" font-size="6" font-weight="bold" dominant-baseline="central">COO-Et-O-</text>
+            <!-- ポリマー括弧 [ ]n -->
+            <text x="6" y="55" fill="#94a3b8" font-size="18" font-weight="bold" dominant-baseline="central">[</text>
+            <text x="108" y="55" fill="#94a3b8" font-size="18" font-weight="bold" dominant-baseline="central">]</text>
+            <text x="113" y="64" fill="#38bdf8" font-size="7" font-weight="bold">n</text>
+            
+            <!-- 左パラ位: -CO- -->
+            <text x="23" y="55" fill="#38bdf8" font-size="6.8" font-weight="bold" text-anchor="middle" dominant-baseline="central">-CO-</text>
+            <line x1="33" y1="55" x2="39" y2="55" stroke="#38bdf8" stroke-width="1.8"/>
+            
+            <!-- 水平ベンゼン環 (角が左右: 39,55 と 65,55) -->
+            <polygon points="39,55 45.5,43.7 58.5,43.7 65,55 58.5,66.3 45.5,66.3" stroke="#38bdf8" stroke-width="1.8" fill="none"/>
+            <circle cx="52" cy="55" r="7.5" stroke="#38bdf8" stroke-width="1.4" fill="none"/>
+            
+            <!-- 右パラ位: -COO-CH₂CH₂-O- -->
+            <line x1="65" y1="55" x2="70" y2="55" stroke="#38bdf8" stroke-width="1.8"/>
+            <text x="89" y="55" fill="#34d399" font-size="5.2" font-weight="bold" text-anchor="middle" dominant-baseline="central">-COOCH₂CH₂O-</text>
+            
             <text x="60" y="90" fill="#38bdf8" font-size="7.5" text-anchor="middle" font-weight="bold">ポリエチレンテレフタラート</text>
           ${end}`;
 
@@ -1080,7 +1084,7 @@
     let discoveredCompounds = new Set(["benzene", "naphthalene"]);
     let currentTargetId = "toluene";
 
-    const STORAGE_KEY = "aromatic_game_save_v6";
+    const STORAGE_KEY = "aromatic_game_save_v7";
 
     function loadSavedData() {
       try {
@@ -1208,6 +1212,7 @@
             <div class="log-line log-success">【異性体同時生成】 ${match.log}</div>
             <div class="log-line log-info">o-キシレン、m-キシレン、p-キシレン の<b>全3種を図鑑に登録</b>しました！</div>
           `;
+          logContainer.scrollTop = 0;
           showToast("✨ キシレン3異性体を図鑑に一括登録しました！");
           openIsomerModal();
           return;
@@ -1225,6 +1230,7 @@
           <div class="log-line log-success">【反応成功】 ${match.log}</div>
           <div class="log-line log-info">${prevName} ➔ <b>${newCompound.name}</b> に変化しました。</div>
         `;
+        logContainer.scrollTop = 0;
 
         if (isNew) {
           showToast(`✨ 新発見！「${newCompound.name}」を図鑑に登録しました`);
@@ -1237,33 +1243,25 @@
           <div class="log-line log-fail">【反応なし】 ${cName} に「${rInfo.name}」を加えても変化しませんでした。</div>
           <div class="log-line log-info">別の試薬を試すか、ベンゼンやナフタレンに戻して再挑戦してみましょう。</div>
         `;
+        logContainer.scrollTop = 0;
       }
     }
 
-    // キシレン選択モーダルを動的生成（文字列被り解消・中央揃え）
+    // キシレン選択モーダル（説明文なし、中央揃え）
     function openIsomerModal() {
       const container = document.getElementById("isomerChoiceContainer");
       container.innerHTML = `
         <button class="isomer-choice-btn" onclick="chooseIsomer('o_xylene')">
-          <div style="width:48px;height:48px;flex-shrink:0;">${makeCompoundSvg('o_xylene')}</div>
-          <div class="isomer-btn-text">
-            <span class="isomer-btn-title">o-キシレン (オルト体)</span>
-            <span class="isomer-btn-sub">酸化するとフタル酸になります</span>
-          </div>
+          <div style="width:46px;height:46px;flex-shrink:0;">${makeCompoundSvg('o_xylene')}</div>
+          <div class="isomer-btn-title">o-キシレン</div>
         </button>
         <button class="isomer-choice-btn" onclick="chooseIsomer('m_xylene')">
-          <div style="width:48px;height:48px;flex-shrink:0;">${makeCompoundSvg('m_xylene')}</div>
-          <div class="isomer-btn-text">
-            <span class="isomer-btn-title">m-キシレン (メタ体)</span>
-            <span class="isomer-btn-sub">酸化するとイソフタル酸になります</span>
-          </div>
+          <div style="width:46px;height:46px;flex-shrink:0;">${makeCompoundSvg('m_xylene')}</div>
+          <div class="isomer-btn-title">m-キシレン</div>
         </button>
         <button class="isomer-choice-btn" onclick="chooseIsomer('p_xylene')">
-          <div style="width:48px;height:48px;flex-shrink:0;">${makeCompoundSvg('p_xylene')}</div>
-          <div class="isomer-btn-text">
-            <span class="isomer-btn-title">p-キシレン (パラ体)</span>
-            <span class="isomer-btn-sub">酸化するとテレフタル酸(PET原料)になります</span>
-          </div>
+          <div style="width:46px;height:46px;flex-shrink:0;">${makeCompoundSvg('p_xylene')}</div>
+          <div class="isomer-btn-title">p-キシレン</div>
         </button>
       `;
       document.getElementById("isomerModal").classList.add("open");
@@ -1273,24 +1271,30 @@
       document.getElementById("isomerModal").classList.remove("open");
       currentCompoundId = isomerId;
       updateCurrentView();
-      document.getElementById("logContainer").innerHTML += `
-        <div class="log-line log-info">実験台に <b>${COMPOUNDS[isomerId].name}</b> をセットしました。酸化反応を試してみましょう！</div>
+      const logContainer = document.getElementById("logContainer");
+      logContainer.innerHTML = `
+        <div class="log-line log-info">実験台に <b>${COMPOUNDS[isomerId].name}</b> をセットしました。次の反応を試してみましょう！</div>
       `;
+      logContainer.scrollTop = 0;
     }
 
     function resetToBenzene() {
       currentCompoundId = "benzene";
-      document.getElementById("logContainer").innerHTML = `
+      const logContainer = document.getElementById("logContainer");
+      logContainer.innerHTML = `
         <div class="log-line log-info">実験台を洗浄し、新たに「ベンゼン」を用意しました。</div>
       `;
+      logContainer.scrollTop = 0;
       updateCurrentView();
     }
 
     function loadNaphthalene() {
       currentCompoundId = "naphthalene";
-      document.getElementById("logContainer").innerHTML = `
+      const logContainer = document.getElementById("logContainer");
+      logContainer.innerHTML = `
         <div class="log-line log-info">実験台に「ナフタレン」を用意しました。酸化反応を試してみましょう！</div>
       `;
+      logContainer.scrollTop = 0;
       updateCurrentView();
     }
 
@@ -1364,9 +1368,11 @@
             currentCompoundId = c.id;
             updateCurrentView();
             closeBookModal();
-            document.getElementById("logContainer").innerHTML = `
+            const logContainer = document.getElementById("logContainer");
+            logContainer.innerHTML = `
               <div class="log-line log-info">図鑑から <b>${c.name}</b> を実験台にセットしました。</div>
             `;
+            logContainer.scrollTop = 0;
           };
         } else {
           item.innerHTML = `
@@ -1392,9 +1398,11 @@
         saveData();
         closeBookModal();
         updateCurrentView();
-        document.getElementById("logContainer").innerHTML = `
+        const logContainer = document.getElementById("logContainer");
+        logContainer.innerHTML = `
           <div class="log-line log-fail">図鑑データを初期化しました。ベンゼンから再スタートしましょう！</div>
         `;
+        logContainer.scrollTop = 0;
         showToast("図鑑をリセットしました");
       }
     }
