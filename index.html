@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>芳香族化合物 合成ラボ</title>
+  <title>芳香族化合物 合成ラボ 完全版</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -55,7 +55,6 @@
     .title {
       font-size: 1.05rem;
       font-weight: 700;
-      letter-spacing: 0.5px;
       color: #38bdf8;
       display: flex;
       align-items: center;
@@ -137,7 +136,6 @@
       color: var(--accent);
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
     .task-target {
       font-size: 0.95rem;
@@ -180,7 +178,6 @@
       font-size: 1.25rem;
       font-weight: 800;
       color: #fff;
-      letter-spacing: 0.5px;
     }
     .current-formula {
       font-size: 0.85rem;
@@ -188,8 +185,8 @@
       font-family: monospace;
     }
     .svg-container {
-      width: 150px;
-      height: 150px;
+      width: 160px;
+      height: 160px;
       margin: 2px auto;
       background: #0f172a;
       border-radius: 10px;
@@ -197,7 +194,7 @@
       align-items: center;
       justify-content: center;
       border: 1px solid #1e293b;
-      padding: 4px;
+      padding: 6px;
     }
     .svg-container svg {
       width: 100%;
@@ -217,20 +214,20 @@
 
     .action-bar {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
     }
     .btn {
-      padding: 11px 14px;
+      padding: 10px 8px;
       border-radius: 10px;
-      font-size: 0.85rem;
+      font-size: 0.78rem;
       font-weight: 700;
       border: none;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 4px;
       transition: all 0.15s ease;
     }
     .btn:active {
@@ -240,6 +237,11 @@
       background: #334155;
       color: #f1f5f9;
       border: 1px solid #475569;
+    }
+    .btn-naph {
+      background: #3b4252;
+      color: #e5e9f0;
+      border: 1px solid #4c566a;
     }
     .btn-book {
       background: linear-gradient(135deg, #0284c7, #2563eb);
@@ -318,7 +320,7 @@
       background-color: var(--button-bg);
       border: 1px solid #475569;
       border-radius: 10px;
-      padding: 10px 8px;
+      padding: 9px 6px;
       color: var(--text);
       display: flex;
       flex-direction: column;
@@ -326,7 +328,7 @@
       gap: 2px;
       cursor: pointer;
       transition: all 0.15s ease;
-      min-height: 54px;
+      min-height: 52px;
       justify-content: center;
     }
     .reagent-btn:active {
@@ -336,9 +338,10 @@
     .reagent-name {
       font-size: 0.78rem;
       font-weight: 700;
+      text-align: center;
     }
     .reagent-detail {
-      font-size: 0.68rem;
+      font-size: 0.66rem;
       color: #94a3b8;
     }
 
@@ -351,7 +354,6 @@
       color: #38bdf8;
     }
 
-    /* モーダル汎用 */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -465,7 +467,6 @@
       cursor: pointer;
     }
 
-    /* 異性体選択モーダル用 */
     .isomer-choice-list {
       display: flex;
       flex-direction: column;
@@ -516,7 +517,7 @@
 
   <header>
     <div class="title">
-      <span>⬡</span> 芳香族合成ラボ
+      <span>⬡</span> 芳香族合成ラボ 完全版
     </div>
     <div class="mode-toggle-wrap">
       <span>アシスト</span>
@@ -548,10 +549,13 @@
 
     <div class="action-bar">
       <button class="btn btn-reset" onclick="resetToBenzene()">
-        ↺ ベンゼンを用意
+        ↺ ベンゼン
+      </button>
+      <button class="btn btn-naph" onclick="loadNaphthalene()">
+        ⌬ ナフタレン
       </button>
       <button class="btn btn-book" onclick="openBookModal()">
-        📖 図鑑 (<span id="discoveredCount">1</span>/<span id="totalCompounds">34</span>)
+        📖 図鑑 (<span id="discoveredCount">2</span>/<span id="totalCompounds">36</span>)
       </button>
     </div>
 
@@ -584,8 +588,8 @@
         <button class="modal-close" onclick="closeBookModal()">&times;</button>
       </div>
       <div class="book-stats">
-        <span>登録数: <b id="bookStatsDiscovered" style="color:var(--accent);">1</b> / <span id="bookStatsTotal">34</span></span>
-        <span id="bookProgressPercent">3% 達成</span>
+        <span>登録数: <b id="bookStatsDiscovered" style="color:var(--accent);">2</b> / <span id="bookStatsTotal">36</span></span>
+        <span id="bookProgressPercent">5% 達成</span>
       </div>
       <div class="book-list" id="bookList"></div>
       <div class="modal-footer">
@@ -602,7 +606,7 @@
         <div class="modal-title">⚗️ キシレン異性体の生成</div>
       </div>
       <div style="padding:10px 16px; font-size:0.75rem; color:var(--text-sub); border-bottom:1px solid var(--card-border);">
-        トルエンのアルキル化により3種類のキシレン異性体（o-, m-, p-）が生成し、<b>すべて図鑑に登録</b>されました！続けて実験台に乗せる化合物を1つ選択してください：
+        トルエンのアルキル化により3種類のキシレン異性体（o-, m-, p-）が生成し、<b>すべて図鑑に登録</b>されました！続けて実験台に乗せる異性体を選択してください：
       </div>
       <div class="isomer-choice-list">
         <button class="isomer-choice-btn" onclick="chooseIsomer('o_xylene')">
@@ -634,11 +638,13 @@
 
   <script>
     /* ========================================================
-       1. SVGグラフィック定義（見切れ防止・座標調整版）
+       1. SVGグラフィック定義（ナフタレン・無水フタル酸・PET等 完全修正版）
        ======================================================== */
+    // 標準ベンゼン環：中心(60, 60)、半径24
+    // 頂点: 1位(60,36), 2位(80.8,48), 3位(80.8,72), 4位(60,84), 5位(39.2,72), 6位(39.2,48)
     const SVG_CORE = `
-      <polygon points="60,35 84,49 84,77 60,91 36,77 36,49" stroke="#38bdf8" stroke-width="2.6" fill="none"/>
-      <circle cx="60" cy="63" r="14" stroke="#38bdf8" stroke-width="2.2" fill="none"/>
+      <polygon points="60,36 81,48 81,72 60,84 39,72 39,48" stroke="#38bdf8" stroke-width="2.5" fill="none"/>
+      <circle cx="60" cy="60" r="14" stroke="#38bdf8" stroke-width="2.2" fill="none"/>
     `;
 
     function makeCompoundSvg(type) {
@@ -647,220 +653,301 @@
       switch(type) {
         case "benzene":
           return `${base}${SVG_CORE}${end}`;
+
+        case "naphthalene":
+          // 正確な2縮合環：左環中心(40,60), 右環中心(80,60), 共有辺(60,42)-(60,78)
+          return `${base}
+            <polygon points="40,24 60,36 60,84 40,96 20,84 20,36" stroke="#38bdf8" stroke-width="2.3" fill="none"/>
+            <polygon points="80,24 100,36 100,84 80,96 60,84 60,36" stroke="#38bdf8" stroke-width="2.3" fill="none"/>
+            <circle cx="40" cy="60" r="13" stroke="#38bdf8" stroke-width="2" fill="none"/>
+            <circle cx="80" cy="60" r="13" stroke="#38bdf8" stroke-width="2" fill="none"/>
+          ${end}`;
+
         case "toluene":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="22" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#fff" font-size="9" text-anchor="middle" font-family="sans-serif" font-weight="bold">CH₃</text>
+            <line x1="60" y1="36" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#fff" font-size="9" text-anchor="middle" font-family="sans-serif" font-weight="bold" dominant-baseline="central">CH₃</text>
           ${end}`;
+
         case "chlorobenzene":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="17" fill="#34d399" font-size="10" text-anchor="middle" font-weight="bold">Cl</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#34d399" font-size="10" text-anchor="middle" font-weight="bold" dominant-baseline="central">Cl</text>
           ${end}`;
+
         case "nitrobenzene":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="17" fill="#fb7185" font-size="9" text-anchor="middle" font-weight="bold">NO₂</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#fb7185" font-size="9" text-anchor="middle" font-weight="bold" dominant-baseline="central">NO₂</text>
           ${end}`;
+
         case "benzenesulfonic_acid":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#fbbf24" font-size="8.5" text-anchor="middle" font-weight="bold">SO₃H</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#fbbf24" font-size="8.5" text-anchor="middle" font-weight="bold" dominant-baseline="central">SO₃H</text>
           ${end}`;
+
         case "cumene":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="15" fill="#fff" font-size="7.5" text-anchor="middle" font-weight="bold">CH(CH₃)₂</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#fff" font-size="7.5" text-anchor="middle" font-weight="bold" dominant-baseline="central">CH(CH₃)₂</text>
           ${end}`;
+
         case "cyclohexane":
           return `${base}
             <polygon points="60,35 86,50 86,78 60,93 34,78 34,50" stroke="#94a3b8" stroke-width="3" fill="none"/>
           ${end}`;
+
         case "bhc":
           return `${base}
             <polygon points="60,38 82,51 82,75 60,88 38,75 38,51" stroke="#94a3b8" stroke-width="2.5" fill="none"/>
-            <text x="60" y="27" fill="#34d399" font-size="8.5" font-weight="bold" text-anchor="middle">Cl</text>
-            <text x="96" y="52" fill="#34d399" font-size="8.5" font-weight="bold">Cl</text>
-            <text x="96" y="80" fill="#34d399" font-size="8.5" font-weight="bold">Cl</text>
-            <text x="60" y="103" fill="#34d399" font-size="8.5" font-weight="bold" text-anchor="middle">Cl</text>
-            <text x="14" y="80" fill="#34d399" font-size="8.5" font-weight="bold">Cl</text>
-            <text x="14" y="52" fill="#34d399" font-size="8.5" font-weight="bold">Cl</text>
+            <text x="60" y="27" fill="#34d399" font-size="8.5" font-weight="bold" text-anchor="middle" dominant-baseline="central">Cl</text>
+            <text x="96" y="51" fill="#34d399" font-size="8.5" font-weight="bold" dominant-baseline="central">Cl</text>
+            <text x="96" y="75" fill="#34d399" font-size="8.5" font-weight="bold" dominant-baseline="central">Cl</text>
+            <text x="60" y="100" fill="#34d399" font-size="8.5" font-weight="bold" text-anchor="middle" dominant-baseline="central">Cl</text>
+            <text x="14" y="75" fill="#34d399" font-size="8.5" font-weight="bold" dominant-baseline="central">Cl</text>
+            <text x="14" y="51" fill="#34d399" font-size="8.5" font-weight="bold" dominant-baseline="central">Cl</text>
           ${end}`;
+
         case "cumene_hydroperoxide":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="15" fill="#fff" font-size="6.5" text-anchor="middle" font-weight="bold">C(CH₃)₂OOH</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="14" fill="#fff" font-size="6.5" text-anchor="middle" font-weight="bold" dominant-baseline="central">C(CH₃)₂OOH</text>
           ${end}`;
+
         case "sodium_phenoxide":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#a78bfa" font-size="9" text-anchor="middle" font-weight="bold">ONa</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#a78bfa" font-size="9" text-anchor="middle" font-weight="bold" dominant-baseline="central">ONa</text>
           ${end}`;
+
         case "phenol":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#34d399" font-size="9.5" text-anchor="middle" font-weight="bold">OH</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#34d399" font-size="9.5" text-anchor="middle" font-weight="bold" dominant-baseline="central">OH</text>
           ${end}`;
+
         case "tribromophenol":
+          // 正確な2,4,6-トリブロモフェノール: 1位OH, 2位Br(81,48), 4位Br(60,84), 6位Br(39,48)
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#34d399" font-size="9" text-anchor="middle" font-weight="bold">OH</text>
-            <line x1="84" y1="49" x2="94" y2="43" stroke="#38bdf8" stroke-width="2.2"/>
-            <text x="96" y="44" fill="#f59e0b" font-size="8.5" font-weight="bold">Br</text>
-            <line x1="84" y1="77" x2="94" y2="83" stroke="#38bdf8" stroke-width="2.2"/>
-            <text x="96" y="86" fill="#f59e0b" font-size="8.5" font-weight="bold">Br</text>
-            <line x1="36" y1="49" x2="26" y2="43" stroke="#38bdf8" stroke-width="2.2"/>
-            <text x="14" y="44" fill="#f59e0b" font-size="8.5" font-weight="bold">Br</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#34d399" font-size="9" text-anchor="middle" font-weight="bold" dominant-baseline="central">OH</text>
+            <line x1="81" y1="48" x2="92" y2="42" stroke="#38bdf8" stroke-width="2.2"/>
+            <text x="100" y="40" fill="#f59e0b" font-size="8.5" font-weight="bold" dominant-baseline="central">Br</text>
+            <line x1="60" y1="84" x2="60" y2="96" stroke="#38bdf8" stroke-width="2.2"/>
+            <text x="60" y="105" fill="#f59e0b" font-size="8.5" font-weight="bold" text-anchor="middle" dominant-baseline="central">Br</text>
+            <line x1="39" y1="48" x2="28" y2="42" stroke="#38bdf8" stroke-width="2.2"/>
+            <text x="18" y="40" fill="#f59e0b" font-size="8.5" font-weight="bold" dominant-baseline="central">Br</text>
           ${end}`;
+
         case "picric_acid":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#34d399" font-size="9" text-anchor="middle" font-weight="bold">OH</text>
-            <text x="92" y="46" fill="#fb7185" font-size="7.5" font-weight="bold">NO₂</text>
-            <text x="60" y="106" fill="#fb7185" font-size="7.5" font-weight="bold" text-anchor="middle">NO₂</text>
-            <text x="6" y="46" fill="#fb7185" font-size="7.5" font-weight="bold">O₂N</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#34d399" font-size="9" text-anchor="middle" font-weight="bold" dominant-baseline="central">OH</text>
+            <text x="96" y="46" fill="#fb7185" font-size="7.5" font-weight="bold" dominant-baseline="central">NO₂</text>
+            <text x="60" y="102" fill="#fb7185" font-size="7.5" font-weight="bold" text-anchor="middle" dominant-baseline="central">NO₂</text>
+            <text x="8" y="46" fill="#fb7185" font-size="7.5" font-weight="bold" dominant-baseline="central">O₂N</text>
           ${end}`;
+
         case "sodium_salicylate":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#34d399" font-size="9" text-anchor="middle" font-weight="bold">OH</text>
-            <line x1="84" y1="49" x2="93" y2="43" stroke="#38bdf8" stroke-width="2.2"/>
-            <text x="94" y="44" fill="#a78bfa" font-size="7" font-weight="bold">COONa</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#34d399" font-size="9" text-anchor="middle" font-weight="bold" dominant-baseline="central">OH</text>
+            <line x1="81" y1="48" x2="90" y2="43" stroke="#38bdf8" stroke-width="2.2"/>
+            <text x="93" y="41" fill="#a78bfa" font-size="7" font-weight="bold" dominant-baseline="central">COONa</text>
           ${end}`;
+
         case "salicylic_acid":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#34d399" font-size="9" text-anchor="middle" font-weight="bold">OH</text>
-            <line x1="84" y1="49" x2="93" y2="43" stroke="#38bdf8" stroke-width="2.2"/>
-            <text x="94" y="44" fill="#38bdf8" font-size="7.5" font-weight="bold">COOH</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#34d399" font-size="9" text-anchor="middle" font-weight="bold" dominant-baseline="central">OH</text>
+            <line x1="81" y1="48" x2="90" y2="43" stroke="#38bdf8" stroke-width="2.2"/>
+            <text x="93" y="41" fill="#38bdf8" font-size="7.5" font-weight="bold" dominant-baseline="central">COOH</text>
           ${end}`;
+
         case "acetylsalicylic_acid":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="15" fill="#38bdf8" font-size="6.8" text-anchor="middle" font-weight="bold">OCOCH₃</text>
-            <line x1="84" y1="49" x2="93" y2="43" stroke="#38bdf8" stroke-width="2.2"/>
-            <text x="94" y="44" fill="#38bdf8" font-size="7.5" font-weight="bold">COOH</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="14" fill="#38bdf8" font-size="6.8" text-anchor="middle" font-weight="bold" dominant-baseline="central">OCOCH₃</text>
+            <line x1="81" y1="48" x2="90" y2="43" stroke="#38bdf8" stroke-width="2.2"/>
+            <text x="93" y="41" fill="#38bdf8" font-size="7.5" font-weight="bold" dominant-baseline="central">COOH</text>
           ${end}`;
+
         case "methyl_salicylate":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#34d399" font-size="9" text-anchor="middle" font-weight="bold">OH</text>
-            <line x1="84" y1="49" x2="93" y2="43" stroke="#38bdf8" stroke-width="2.2"/>
-            <text x="93" y="44" fill="#38bdf8" font-size="6.5" font-weight="bold">COOCH₃</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#34d399" font-size="9" text-anchor="middle" font-weight="bold" dominant-baseline="central">OH</text>
+            <line x1="81" y1="48" x2="90" y2="43" stroke="#38bdf8" stroke-width="2.2"/>
+            <text x="92" y="41" fill="#38bdf8" font-size="6.5" font-weight="bold" dominant-baseline="central">COOCH₃</text>
           ${end}`;
+
         case "aniline_hydrochloride":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#a78bfa" font-size="8.5" text-anchor="middle" font-weight="bold">NH₃Cl</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#a78bfa" font-size="8.5" text-anchor="middle" font-weight="bold" dominant-baseline="central">NH₃Cl</text>
           ${end}`;
+
         case "aniline":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#34d399" font-size="9" text-anchor="middle" font-weight="bold">NH₂</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#34d399" font-size="9" text-anchor="middle" font-weight="bold" dominant-baseline="central">NH₂</text>
           ${end}`;
+
         case "acetanilide":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="15" fill="#38bdf8" font-size="6.8" text-anchor="middle" font-weight="bold">NHCOCH₃</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="14" fill="#38bdf8" font-size="6.8" text-anchor="middle" font-weight="bold" dominant-baseline="central">NHCOCH₃</text>
           ${end}`;
+
         case "benzene_diazonium_chloride":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#fb7185" font-size="8" text-anchor="middle" font-weight="bold">N₂⁺Cl⁻</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#fb7185" font-size="8" text-anchor="middle" font-weight="bold" dominant-baseline="central">N₂⁺Cl⁻</text>
           ${end}`;
+
         case "p_hydroxyazobenzene":
           return `${base}
-            <circle cx="34" cy="55" r="14" stroke="#38bdf8" stroke-width="2" fill="none"/>
-            <text x="60" y="58" fill="#fbbf24" font-size="7.5" text-anchor="middle" font-weight="bold">-N=N-</text>
-            <circle cx="86" cy="55" r="14" stroke="#38bdf8" stroke-width="2" fill="none"/>
-            <line x1="86" y1="69" x2="86" y2="80" stroke="#38bdf8" stroke-width="2"/>
-            <text x="86" y="92" fill="#34d399" font-size="8.5" text-anchor="middle" font-weight="bold">OH</text>
+            <!-- 左ベンゼン環 -->
+            <polygon points="26,45 38,38 38,52 26,59 14,52 14,38" stroke="#38bdf8" stroke-width="2" fill="none"/>
+            <circle cx="26" cy="48.5" r="7.5" stroke="#38bdf8" stroke-width="1.6" fill="none"/>
+            <!-- アゾ結合 -N=N- -->
+            <line x1="38" y1="45" x2="48" y2="45" stroke="#38bdf8" stroke-width="2"/>
+            <text x="60" y="46" fill="#fbbf24" font-size="7.5" font-weight="bold" text-anchor="middle" dominant-baseline="central">-N=N-</text>
+            <line x1="72" y1="45" x2="82" y2="45" stroke="#38bdf8" stroke-width="2"/>
+            <!-- 右ベンゼン環 -->
+            <polygon points="94,45 106,38 106,52 94,59 82,52 82,38" stroke="#38bdf8" stroke-width="2" fill="none"/>
+            <circle cx="94" cy="48.5" r="7.5" stroke="#38bdf8" stroke-width="1.6" fill="none"/>
+            <!-- パラ位 OH -->
+            <line x1="94" y1="59" x2="94" y2="70" stroke="#38bdf8" stroke-width="2"/>
+            <text x="94" y="80" fill="#34d399" font-size="8.5" text-anchor="middle" font-weight="bold" dominant-baseline="central">OH</text>
           ${end}`;
+
         case "tnt":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#fff" font-size="8.5" text-anchor="middle" font-weight="bold">CH₃</text>
-            <text x="92" y="46" fill="#fb7185" font-size="7.5" font-weight="bold">NO₂</text>
-            <text x="60" y="106" fill="#fb7185" font-size="7.5" font-weight="bold" text-anchor="middle">NO₂</text>
-            <text x="6" y="46" fill="#fb7185" font-size="7.5" font-weight="bold">O₂N</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#fff" font-size="8.5" text-anchor="middle" font-weight="bold" dominant-baseline="central">CH₃</text>
+            <text x="96" y="46" fill="#fb7185" font-size="7.5" font-weight="bold" dominant-baseline="central">NO₂</text>
+            <text x="60" y="102" fill="#fb7185" font-size="7.5" font-weight="bold" text-anchor="middle" dominant-baseline="central">NO₂</text>
+            <text x="8" y="46" fill="#fb7185" font-size="7.5" font-weight="bold" dominant-baseline="central">O₂N</text>
           ${end}`;
+
         case "o_xylene":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#fff" font-size="8.5" text-anchor="middle" font-weight="bold">CH₃</text>
-            <line x1="84" y1="49" x2="93" y2="43" stroke="#38bdf8" stroke-width="2.2"/>
-            <text x="94" y="44" fill="#fff" font-size="8" font-weight="bold">CH₃</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#fff" font-size="8.5" text-anchor="middle" font-weight="bold" dominant-baseline="central">CH₃</text>
+            <line x1="81" y1="48" x2="91" y2="43" stroke="#38bdf8" stroke-width="2.2"/>
+            <text x="95" y="40" fill="#fff" font-size="8" font-weight="bold" dominant-baseline="central">CH₃</text>
           ${end}`;
+
         case "m_xylene":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#fff" font-size="8.5" text-anchor="middle" font-weight="bold">CH₃</text>
-            <line x1="84" y1="77" x2="93" y2="83" stroke="#38bdf8" stroke-width="2.2"/>
-            <text x="94" y="86" fill="#fff" font-size="8" font-weight="bold">CH₃</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#fff" font-size="8.5" text-anchor="middle" font-weight="bold" dominant-baseline="central">CH₃</text>
+            <line x1="81" y1="72" x2="91" y2="78" stroke="#38bdf8" stroke-width="2.2"/>
+            <text x="95" y="81" fill="#fff" font-size="8" font-weight="bold" dominant-baseline="central">CH₃</text>
           ${end}`;
+
         case "p_xylene":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#fff" font-size="8.5" text-anchor="middle" font-weight="bold">CH₃</text>
-            <line x1="60" y1="91" x2="60" y2="101" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="112" fill="#fff" font-size="8.5" text-anchor="middle" font-weight="bold">CH₃</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#fff" font-size="8.5" text-anchor="middle" font-weight="bold" dominant-baseline="central">CH₃</text>
+            <line x1="60" y1="84" x2="60" y2="96" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="105" fill="#fff" font-size="8.5" text-anchor="middle" font-weight="bold" dominant-baseline="central">CH₃</text>
           ${end}`;
+
         case "phthalic_acid":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#38bdf8" font-size="8" text-anchor="middle" font-weight="bold">COOH</text>
-            <line x1="84" y1="49" x2="93" y2="43" stroke="#38bdf8" stroke-width="2.2"/>
-            <text x="94" y="44" fill="#38bdf8" font-size="7.5" font-weight="bold">COOH</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#38bdf8" font-size="8" text-anchor="middle" font-weight="bold" dominant-baseline="central">COOH</text>
+            <line x1="81" y1="48" x2="90" y2="43" stroke="#38bdf8" stroke-width="2.2"/>
+            <text x="93" y="41" fill="#38bdf8" font-size="7.5" font-weight="bold" dominant-baseline="central">COOH</text>
           ${end}`;
+
         case "phthalic_anhydride":
+          // 正確な無水フタル酸（五員環酸無水物）：81,48 と 81,72 から酸素架橋へ
           return `${base}${SVG_CORE}
-            <path d="M 80 43 L 95 53 L 95 72 L 80 82" stroke="#f43f5e" stroke-width="2" fill="none"/>
-            <text x="100" y="66" fill="#f43f5e" font-size="9" font-weight="bold">O</text>
+            <line x1="81" y1="48" x2="94" y2="48" stroke="#38bdf8" stroke-width="2.2"/>
+            <line x1="81" y1="72" x2="94" y2="72" stroke="#38bdf8" stroke-width="2.2"/>
+            <line x1="94" y1="48" x2="103" y2="60" stroke="#f43f5e" stroke-width="2.2"/>
+            <line x1="94" y1="72" x2="103" y2="60" stroke="#f43f5e" stroke-width="2.2"/>
+            <circle cx="103" cy="60" r="3" fill="#f43f5e"/>
+            <!-- カルボニル =O -->
+            <line x1="94" y1="48" x2="99" y2="38" stroke="#f43f5e" stroke-width="2"/>
+            <line x1="94" y1="72" x2="99" y2="82" stroke="#f43f5e" stroke-width="2"/>
+            <text x="103" y="36" fill="#f43f5e" font-size="7" font-weight="bold" dominant-baseline="central">O</text>
+            <text x="103" y="84" fill="#f43f5e" font-size="7" font-weight="bold" dominant-baseline="central">O</text>
+            <text x="110" y="60" fill="#f43f5e" font-size="7.5" font-weight="bold" dominant-baseline="central">O</text>
           ${end}`;
+
         case "isophthalic_acid":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#38bdf8" font-size="8" text-anchor="middle" font-weight="bold">COOH</text>
-            <line x1="84" y1="77" x2="93" y2="83" stroke="#38bdf8" stroke-width="2.2"/>
-            <text x="94" y="86" fill="#38bdf8" font-size="7.5" font-weight="bold">COOH</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#38bdf8" font-size="8" text-anchor="middle" font-weight="bold" dominant-baseline="central">COOH</text>
+            <line x1="81" y1="72" x2="90" y2="78" stroke="#38bdf8" stroke-width="2.2"/>
+            <text x="93" y="81" fill="#38bdf8" font-size="7.5" font-weight="bold" dominant-baseline="central">COOH</text>
           ${end}`;
+
         case "terephthalic_acid":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#38bdf8" font-size="8" text-anchor="middle" font-weight="bold">COOH</text>
-            <line x1="60" y1="91" x2="60" y2="101" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="112" fill="#38bdf8" font-size="8" text-anchor="middle" font-weight="bold">COOH</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#38bdf8" font-size="8" text-anchor="middle" font-weight="bold" dominant-baseline="central">COOH</text>
+            <line x1="60" y1="84" x2="60" y2="96" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="105" fill="#38bdf8" font-size="8" text-anchor="middle" font-weight="bold" dominant-baseline="central">COOH</text>
           ${end}`;
+
+        case "pet":
+          // 正確なPETユニット構造式
+          return `${base}
+            <text x="12" y="55" fill="#94a3b8" font-size="20" font-weight="bold" dominant-baseline="central">[</text>
+            <text x="108" y="55" fill="#94a3b8" font-size="20" font-weight="bold" dominant-baseline="central">]</text>
+            <text x="114" y="65" fill="#38bdf8" font-size="8" font-weight="bold">n</text>
+            <!-- 左エステル -->
+            <text x="24" y="55" fill="#38bdf8" font-size="6.5" font-weight="bold" dominant-baseline="central">-CO-</text>
+            <!-- ベンゼン環 -->
+            <polygon points="60,42 70,48 70,62 60,68 50,62 50,48" stroke="#38bdf8" stroke-width="1.8" fill="none"/>
+            <circle cx="60" cy="55" r="7" stroke="#38bdf8" stroke-width="1.5" fill="none"/>
+            <line x1="38" y1="55" x2="50" y2="55" stroke="#38bdf8" stroke-width="1.8"/>
+            <line x1="70" y1="55" x2="78" y2="55" stroke="#38bdf8" stroke-width="1.8"/>
+            <!-- 右エチレングリコール鎖 -->
+            <text x="94" y="55" fill="#34d399" font-size="6" font-weight="bold" dominant-baseline="central">COO-Et-O-</text>
+            <text x="60" y="90" fill="#38bdf8" font-size="7.5" text-anchor="middle" font-weight="bold">ポリエチレンテレフタラート</text>
+          ${end}`;
+
         case "ethylbenzene":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">CH₂CH₃</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold" dominant-baseline="central">CH₂CH₃</text>
           ${end}`;
+
         case "benzyl_alcohol":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#34d399" font-size="8" text-anchor="middle" font-weight="bold">CH₂OH</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#34d399" font-size="8" text-anchor="middle" font-weight="bold" dominant-baseline="central">CH₂OH</text>
           ${end}`;
+
         case "benzaldehyde":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#38bdf8" font-size="8.5" text-anchor="middle" font-weight="bold">CHO</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#38bdf8" font-size="8.5" text-anchor="middle" font-weight="bold" dominant-baseline="central">CHO</text>
           ${end}`;
+
         case "benzoic_acid":
           return `${base}${SVG_CORE}
-            <line x1="60" y1="35" x2="60" y2="23" stroke="#38bdf8" stroke-width="2.5"/>
-            <text x="60" y="16" fill="#38bdf8" font-size="8" text-anchor="middle" font-weight="bold">COOH</text>
+            <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="60" y="15" fill="#38bdf8" font-size="8" text-anchor="middle" font-weight="bold" dominant-baseline="central">COOH</text>
           ${end}`;
+
         default:
           return `${base}${SVG_CORE}${end}`;
       }
     }
 
     /* ========================================================
-       2. 化合物データベース定義 (全34種)
+       2. 化合物データベース定義 (全36種)
        ======================================================== */
     const COMPOUNDS = {
       benzene: { id: "benzene", name: "ベンゼン", formula: "C₆H₆", desc: "最も基本的な芳香族炭化水素。正六角形平面構造で置換反応が起きやすい。" },
+      naphthalene: { id: "naphthalene", name: "ナフタレン", formula: "C₁₀H₈", desc: "ベンゼン環が2個縮合した炭化水素。防虫剤の原料。酸化すると無水フタル酸になる。" },
       chlorobenzene: { id: "chlorobenzene", name: "クロロベンゼン", formula: "C₆H₅Cl", desc: "ベンゼンに鉄触媒下で塩素を置換。高温高圧でNaOHと反応してフェノキシドへ。" },
       bhc: { id: "bhc", name: "ベンゼンヘキサクロリド (BHC)", formula: "C₆H₆Cl₆", desc: "光照射下で塩素を付加させた飽和環状有機塩素化合物。" },
       nitrobenzene: { id: "nitrobenzene", name: "ニトロベンゼン", formula: "C₆H₅NO₂", desc: "混酸によりニトロ化された淡黄色の液体。スズと塩酸で還元するとアニリンへ。" },
@@ -868,10 +955,18 @@
       cumene: { id: "cumene", name: "クメン", formula: "C₆H₅CH(CH₃)₂", desc: "ベンゼンにプロピレンを付加。フェノール工業的製法（クメン法）の出発物質。" },
       cyclohexane: { id: "cyclohexane", name: "シクロヘキサン", formula: "C₆H₁₂", desc: "ニッケル触媒下でベンゼンに水素を高圧付加させた飽和炭化水素。" },
       toluene: { id: "toluene", name: "トルエン", formula: "C₆H₅CH₃", desc: "メチルベンゼン。アルキル化でキシレン異性体混合物を与え、激しいニトロ化でTNTへ。" },
-      ethylbenzene: { id: "ethylbenzene", name: "エチルベンゼン", formula: "C₆H₅CH₂CH₃", desc: "側鎖アルキル基を酸化すると安息香酸になる。" },
+      ethylbenzene: { id: "ethylbenzene", name: "エチルベンゼン", formula: "C₆H₅CH₂CH₃", desc: "ベンゼンにエチレンを付加して生成。過マンガン酸カリウムで酸化すると安息香酸になる。" },
+      benzyl_alcohol: { id: "benzyl_alcohol", name: "ベンジルアルコール", formula: "C₆H₅CH₂OH", desc: "第一級芳香族アルコール。穏やかに酸化するとベンズアルデヒドになる。" },
+      benzaldehyde: { id: "benzaldehyde", name: "ベンズアルデヒド", formula: "C₆H₅CHO", desc: "アーモンドの香気を持つ芳香族アルデヒド。還元性があり、酸化で安息香酸へ。" },
+      benzoic_acid: { id: "benzoic_acid", name: "安息香酸", formula: "C₆H₅COOH", desc: "トルエンや側鎖アルキル基を酸化して得られる代表的芳香族カルボン酸。" },
       o_xylene: { id: "o_xylene", name: "o-キシレン", formula: "C₆H₄(CH₃)₂", desc: "オルト異性体。酸化するとフタル酸（加熱で脱水して無水フタル酸）になる。" },
       m_xylene: { id: "m_xylene", name: "m-キシレン", formula: "C₆H₄(CH₃)₂", desc: "メタ異性体。酸化するとイソフタル酸になる。" },
       p_xylene: { id: "p_xylene", name: "p-キシレン", formula: "C₆H₄(CH₃)₂", desc: "パラ異性体。酸化するとテレフタル酸（PET合成の重要原料）になる。" },
+      phthalic_acid: { id: "phthalic_acid", name: "フタル酸", formula: "C₆H₄(COOH)₂", desc: "o-キシレンを酸化して得られるジカルボン酸。加熱脱水で酸無水物になる。" },
+      phthalic_anhydride: { id: "phthalic_anhydride", name: "無水フタル酸", formula: "C₆H₄(CO)₂O", desc: "フタル酸を加熱脱水（またはナフタレンを酸化）して得られる環状酸無水物。" },
+      isophthalic_acid: { id: "isophthalic_acid", name: "イソフタル酸", formula: "C₆H₄(COOH)₂", desc: "m-キシレンを酸化して得られるメタ位ジカルボン酸。" },
+      terephthalic_acid: { id: "terephthalic_acid", name: "テレフタル酸", formula: "C₆H₄(COOH)₂", desc: "p-キシレンを酸化して得られる結晶。エチレングリコールと縮合重合してPETに。" },
+      pet: { id: "pet", name: "ポリエチレンテレフタラート (PET)", formula: "[-COC₆H₄COOCH₂CH₂O-]ₙ", desc: "テレフタル酸とエチレングリコールがエステル結合で縮合重合した合成高分子。" },
       cumene_hydroperoxide: { id: "cumene_hydroperoxide", name: "クメンヒドロペルオキシド", formula: "C₆H₅C(CH₃)₂OOH", desc: "クメンの空気酸化生成物。希硫酸で酸分解するとフェノールとアセトンに分かれる。" },
       sodium_phenoxide: { id: "sodium_phenoxide", name: "ナトリウムフェノキシド", formula: "C₆H₅ONa", desc: "弱酸の塩。二酸化炭素や塩酸を通じることでフェノールが遊離する。" },
       phenol: { id: "phenol", name: "フェノール", formula: "C₆H₅OH", desc: "弱酸性の芳香族。塩化鉄(III)で紫色に呈色し、臭素水で白色沈殿を生じる。" },
@@ -880,20 +975,13 @@
       acetanilide: { id: "acetanilide", name: "アセトアニリド", formula: "C₆H₅NHCOCH₃", desc: "アニリンのアセチル化で得られるアミド結合を持つ中性結晶（解熱鎮痛剤）。" },
       benzene_diazonium_chloride: { id: "benzene_diazonium_chloride", name: "塩化ベンゼンジアゾニウム", formula: "C₆H₅N₂⁺Cl⁻", desc: "氷冷下(5℃以下)でジアゾ化して得られる不安定塩。温水で分解してフェノールへ。" },
       p_hydroxyazobenzene: { id: "p_hydroxyazobenzene", name: "p-ヒドロキシアゾベンゼン", formula: "C₆H₅-N=N-C₆H₄OH", desc: "ジアゾニウム塩とナトリウムフェノキシドのカップリング反応で生じる橙赤色アゾ染料。" },
-      tribromophenol: { id: "tribromophenol", name: "2,4,6-トリブロモフェノール", formula: "C₆H₂Br₃OH", desc: "フェノール水溶液に臭素水を加えると生じる白色沈殿。" },
+      tribromophenol: { id: "tribromophenol", name: "2,4,6-トリブロモフェノール", formula: "C₆H₂Br₃OH", desc: "フェノール水溶液に臭素水を加えると生じる白色沈殿（2,4,6位にBrが結合）。" },
       picric_acid: { id: "picric_acid", name: "2,4,6-トリニトロフェノール (ピクリン酸)", formula: "C₆H₂(NO₂)₃OH", desc: "フェノールを濃硝酸・濃硫酸で強烈にニトロ化した黄色結晶の強酸。" },
       sodium_salicylate: { id: "sodium_salicylate", name: "サリチル酸ナトリウム", formula: "C₆H₄(OH)COONa", desc: "ナトリウムフェノキシドに高温高圧CO₂を反応させて生成（コルベ・シュミット反応）。" },
       salicylic_acid: { id: "salicylic_acid", name: "サリチル酸", formula: "C₆H₄(OH)COOH", desc: "フェノール性とカルボン酸の両方の性質を持つ二官能性化合物。" },
       acetylsalicylic_acid: { id: "acetylsalicylic_acid", name: "アセチルサリチル酸 (アスピリン)", formula: "C₆H₄(OCOCH₃)COOH", desc: "サリチル酸のOH基をアセチル化。酸性を示す代表的解熱鎮痛消炎剤。" },
       methyl_salicylate: { id: "methyl_salicylate", name: "サリチル酸メチル", formula: "C₆H₄(OH)COOCH₃", desc: "サリチル酸のCOOH基をエステル化。特有の香気（湿布薬の匂い）を持つ。" },
-      tnt: { id: "tnt", name: "2,4,6-トリニトロトルエン (TNT)", formula: "C₆H₂(CH₃)(NO₂)₃", desc: "トルエンを段階的に激しくニトロ化して得られる強力な軍用爆薬。" },
-      benzyl_alcohol: { id: "benzyl_alcohol", name: "ベンジルアルコール", formula: "C₆H₅CH₂OH", desc: "第一級芳香族アルコール。穏やかに酸化するとベンズアルデヒドになる。" },
-      benzaldehyde: { id: "benzaldehyde", name: "ベンズアルデヒド", formula: "C₆H₅CHO", desc: "アーモンドの香気を持つ芳香族アルデヒド。還元性があり、酸化で安息香酸へ。" },
-      benzoic_acid: { id: "benzoic_acid", name: "安息香酸", formula: "C₆H₅COOH", desc: "トルエンや側鎖アルキル基を酸化して得られる代表的芳香族カルボン酸。" },
-      phthalic_acid: { id: "phthalic_acid", name: "フタル酸", formula: "C₆H₄(COOH)₂", desc: "o-キシレンを酸化して得られるジカルボン酸。加熱脱水で酸無水物になる。" },
-      phthalic_anhydride: { id: "phthalic_anhydride", name: "無水フタル酸", formula: "C₆H₄(CO)₂O", desc: "フタル酸を加熱脱水して得られる環状酸無水物。" },
-      isophthalic_acid: { id: "isophthalic_acid", name: "イソフタル酸", formula: "C₆H₄(COOH)₂", desc: "m-キシレンを酸化して得られるメタ位ジカルボン酸。" },
-      terephthalic_acid: { id: "terephthalic_acid", name: "テレフタル酸", formula: "C₆H₄(COOH)₂", desc: "p-キシレンを酸化して得られる結晶。エチレングリコールと縮合重合してPETに。" }
+      tnt: { id: "tnt", name: "2,4,6-トリニトロトルエン (TNT)", formula: "C₆H₂(CH₃)(NO₂)₃", desc: "トルエンを段階的に激しくニトロ化して得られる強力な軍用爆薬。" }
     };
 
     /* ========================================================
@@ -901,21 +989,23 @@
        ======================================================== */
     const REAGENTS = [
       { id: "cl2_fe", name: "Cl₂ + Fe (光遮断)", cat: "sub_add", detail: "ハロゲン化置換" },
-      { id: "cl2_light", name: "Cl₂ + 光 (紫外線)", cat: "sub_add", detail: "塩素付加" },
+      { id: "cl2_light", name: "Cl₂ + 光 (紫外線)", cat: "sub_add", detail: "塩素付加 / 側鎖塩素化" },
       { id: "h2_ni", name: "H₂ + Ni触媒", cat: "sub_add", detail: "水素高圧付加" },
       { id: "mixed_acid", name: "混酸 (濃HNO₃+濃H₂SO₄)", cat: "sub_add", detail: "ニトロ化" },
       { id: "h2so4_heat", name: "濃H₂SO₄ + 加熱", cat: "sub_add", detail: "スルホン化" },
       { id: "propylene", name: "プロピレン (CH₂=CHCH₃)", cat: "sub_add", detail: "付加・アルキル化" },
+      { id: "ethylene", name: "エチレン (CH₂=CH₂)", cat: "sub_add", detail: "エチル化付加" },
       { id: "ch3cl", name: "CH₃Cl + AlCl₃", cat: "sub_add", detail: "フリーデル・クラフツ" },
       { id: "br2_aq", name: "臭素水 (Br₂ aq)", cat: "sub_add", detail: "フェノールのハロゲン化" },
 
-      { id: "kmno4", name: "KMnO₄ (加熱酸化)", cat: "ox_red", detail: "側鎖の酸化" },
+      { id: "kmno4", name: "KMnO₄ (加熱酸化)", cat: "ox_red", detail: "側鎖の強酸化" },
+      { id: "v2o5_ox", name: "V₂O₅触媒 + O₂酸化", cat: "ox_red", detail: "ナフタレン酸化" },
       { id: "o2_air", name: "O₂ (空気酸化)", cat: "ox_red", detail: "クメンの酸化" },
       { id: "sn_hcl", name: "Sn + HCl (還元)", cat: "ox_red", detail: "ニトロ基の還元" },
-      { id: "mild_ox", name: "穏やかな酸化 (CuO等)", cat: "ox_red", detail: "アルコール酸化" },
+      { id: "mild_ox", name: "穏やかな酸化 (CuO等)", cat: "ox_red", detail: "第一級アルコールの酸化" },
       { id: "h2o_heat", name: "H₂O + 加熱 (酸分解)", cat: "ox_red", detail: "ジアゾニウム分解" },
 
-      { id: "naoh_aq", name: "NaOH 水溶液", cat: "acid_base", detail: "中和・弱塩基遊離" },
+      { id: "naoh_aq", name: "NaOH 水溶液", cat: "acid_base", detail: "中和・弱塩基遊離・加水分解" },
       { id: "naoh_melt", name: "NaOH 融解 (アルカリ融解)", cat: "acid_base", detail: "300℃ 高温処理" },
       { id: "hcl_aq", name: "HCl 希塩酸", cat: "acid_base", detail: "強酸による遊離・中和" },
       { id: "co2_gas", name: "CO₂ + H₂O", cat: "acid_base", detail: "弱酸の遊離 (フェノール遊離)" },
@@ -923,6 +1013,7 @@
 
       { id: "acetic_anhydride", name: "無水酢酸 (CH₃CO)₂O", cat: "organic", detail: "アセチル化" },
       { id: "ch3oh_h2so4", name: "CH₃OH + 濃H₂SO₄", cat: "organic", detail: "エステル化" },
+      { id: "ethylene_glycol", name: "エチレングリコール", cat: "organic", detail: "縮合重合 (PET合成)" },
       { id: "heat_dehydrate", name: "加熱脱水 (-H₂O)", cat: "organic", detail: "酸無水物の生成" },
       { id: "nano2_hcl", name: "NaNO₂ + HCl (氷冷5℃以下)", cat: "organic", detail: "ジアゾ化" },
       { id: "phenol_naoh", name: "ナトリウムフェノキシド", cat: "organic", detail: "カップリング反応" },
@@ -930,16 +1021,43 @@
     ];
 
     /* ========================================================
-       4. 反応遷移ルール（異性体同時生成対応）
+       4. 反応遷移ルール
        ======================================================== */
     const TRANSITIONS = [
       { from: "benzene", reagent: "cl2_fe", to: "chlorobenzene", log: "ベンゼンに鉄触媒で塩素を通じ、クロロベンゼンが生成しました。(置換反応)" },
-      { from: "benzene", reagent: "cl2_light", to: "bhc", log: "光照射下で塩素を反応させ、BHC(ベンゼンヘキサクロリド)が付加生成しました。" },
+      { from: "benzene", reagent: "cl2_light", to: "bhc", log: "光照射下で塩素を付加させ、BHC(ベンゼンヘキサクロリド)が生成しました。" },
       { from: "benzene", reagent: "h2_ni", to: "cyclohexane", log: "ニッケル触媒で水素を高圧付加し、シクロヘキサンが生成しました。" },
       { from: "benzene", reagent: "mixed_acid", to: "nitrobenzene", log: "混酸(濃硝酸+濃硫酸)と加熱し、ニトロベンゼンが生成しました。(ニトロ化)" },
       { from: "benzene", reagent: "h2so4_heat", to: "benzenesulfonic_acid", log: "濃硫酸と加熱し、ベンゼンスルホン酸が生成しました。(スルホン化)" },
       { from: "benzene", reagent: "propylene", to: "cumene", log: "触媒下でプロピレンを付加させ、クメンが生成しました。" },
       { from: "benzene", reagent: "ch3cl", to: "toluene", log: "塩化アルミニウム触媒で塩化メチルを反応させ、トルエンが生成しました。(アルキル化)" },
+      { from: "benzene", reagent: "ethylene", to: "ethylbenzene", log: "酸触媒下でエチレンを付加させ、エチルベンゼンが生成しました！" },
+
+      { from: "naphthalene", reagent: "v2o5_ox", to: "phthalic_anhydride", log: "ナフタレンをV₂O₅触媒下で空気酸化し、無水フタル酸が直接生成しました！" },
+      { from: "naphthalene", reagent: "kmno4", to: "phthalic_acid", log: "過マンガン酸カリウムでナフタレンの環を酸化開裂させ、フタル酸が生成しました。" },
+
+      { from: "toluene", reagent: "mixed_acid", to: "tnt", log: "段階的に強力にニトロ化され、爆薬2,4,6-トリニトロトルエン(TNT)が生成しました。" },
+      { from: "toluene", reagent: "kmno4", to: "benzoic_acid", log: "過マンガン酸カリウムでメチル基を強く酸化し、安息香酸が生成しました。" },
+      { from: "toluene", reagent: "cl2_light", to: "benzyl_alcohol", log: "光照射下で側鎖を塩素化(C₆H₅CH₂Cl)し、続けて加水分解してベンジルアルコールが生成しました！" },
+      { 
+        from: "toluene", 
+        reagent: "ch3cl", 
+        to: "o_xylene", 
+        isomers: ["o_xylene", "m_xylene", "p_xylene"],
+        log: "トルエンをアルキル化(CH₃Cl + AlCl₃)し、3種類のキシレン異性体(o-, m-, p-)が生成しました！" 
+      },
+
+      { from: "ethylbenzene", reagent: "kmno4", to: "benzoic_acid", log: "エチルベンゼンの側鎖を過マンガン酸カリウムで酸化し、安息香酸が生成しました。" },
+      { from: "benzyl_alcohol", reagent: "mild_ox", to: "benzaldehyde", log: "第一級アルコールのベンジルアルコールを穏やかに酸化し、ベンズアルデヒドが生成しました！" },
+      { from: "benzyl_alcohol", reagent: "kmno4", to: "benzoic_acid", log: "強く酸化して直接安息香酸に変化しました。" },
+      { from: "benzaldehyde", reagent: "kmno4", to: "benzoic_acid", log: "ベンズアルデヒドを酸化し、安息香酸が生成しました。" },
+
+      { from: "o_xylene", reagent: "kmno4", to: "phthalic_acid", log: "過マンガン酸カリウムで2つのメチル基が酸化され、フタル酸が生成しました。" },
+      { from: "phthalic_acid", reagent: "heat_dehydrate", to: "phthalic_anhydride", log: "隣り合うカルボキシ基が加熱脱水し、環状の無水フタル酸が生成しました。" },
+      { from: "phthalic_anhydride", reagent: "hcl_aq", to: "phthalic_acid", log: "水和・加水分解により、フタル酸に戻りました。" },
+      { from: "m_xylene", reagent: "kmno4", to: "isophthalic_acid", log: "酸化によりメタ位のジカルボン酸であるイソフタル酸が生成しました。" },
+      { from: "p_xylene", reagent: "kmno4", to: "terephthalic_acid", log: "酸化によりパラ位のテレフタル酸が生成しました。(PET合成の重要原料)" },
+      { from: "terephthalic_acid", reagent: "ethylene_glycol", to: "pet", log: "エチレングリコールと加熱して脱水縮合重合し、ポリエチレンテレフタラート(PET)が生成しました！" },
 
       { from: "nitrobenzene", reagent: "sn_hcl", to: "aniline_hydrochloride", log: "スズと塩酸で還元し、アニリン塩酸塩(白色結晶)が生成しました。" },
       { from: "aniline_hydrochloride", reagent: "naoh_aq", to: "aniline", log: "NaOHを加えることで弱塩基が遊離し、油状のアニリンが遊離しました。" },
@@ -951,41 +1069,19 @@
 
       { from: "benzenesulfonic_acid", reagent: "naoh_melt", to: "sodium_phenoxide", log: "固体のNaOHとともに融解(300℃)させ、ナトリウムフェノキシドが生成しました。(アルカリ融解)" },
       { from: "chlorobenzene", reagent: "naoh_melt", to: "sodium_phenoxide", log: "高温・高圧下で水酸化ナトリウム水溶液と反応させ、ナトリウムフェノキシドが生成しました。" },
-
       { from: "cumene", reagent: "o2_air", to: "cumene_hydroperoxide", log: "空気を吹き込んで穏やかに酸化させ、クメンヒドロペルオキシドが生成しました。" },
       { from: "cumene_hydroperoxide", reagent: "h2so4_dil", to: "phenol", log: "希硫酸で酸分解し、フェノールとアセトンが生成しました。(クメン法)" },
-
       { from: "sodium_phenoxide", reagent: "co2_gas", to: "phenol", log: "二酸化炭素を通じることで炭酸より弱い酸であるフェノールが遊離しました。(弱酸の遊離)" },
       { from: "sodium_phenoxide", reagent: "hcl_aq", to: "phenol", log: "強酸の塩酸を加えたため、フェノールが遊離しました。" },
       { from: "phenol", reagent: "naoh_aq", to: "sodium_phenoxide", log: "NaOH水溶液を加えて中和し、ナトリウムフェノキシド水溶液になりました。" },
-      { from: "phenol", reagent: "br2_aq", to: "tribromophenol", log: "臭素水を加えると瞬時に反応し、2,4,6-トリブロモフェノールの白色沈殿が生じました。" },
+      { from: "phenol", reagent: "br2_aq", to: "tribromophenol", log: "臭素水を加えると瞬時に2,4,6位が置換され、2,4,6-トリブロモフェノールの白色沈殿が生じました！" },
       { from: "phenol", reagent: "mixed_acid", to: "picric_acid", log: "濃硝酸・濃硫酸で激しくニトロ化され、黄色結晶のピクリン酸が生成しました。" },
 
       { from: "sodium_phenoxide", reagent: "co2_high_press", to: "sodium_salicylate", log: "高温・高圧(125℃, 数気圧)でCO₂を作用させ、サリチル酸ナトリウムが生成しました。" },
       { from: "sodium_salicylate", reagent: "hcl_aq", to: "salicylic_acid", log: "塩酸を加え、弱酸であるサリチル酸の白色結晶が遊離しました。" },
       { from: "salicylic_acid", reagent: "naoh_aq", to: "sodium_salicylate", log: "NaOHで中和され、サリチル酸ナトリウムに戻りました。" },
       { from: "salicylic_acid", reagent: "acetic_anhydride", to: "acetylsalicylic_acid", log: "無水酢酸によりヒドロキシ基がアセチル化され、解熱鎮痛剤アスピリン(アセチルサリチル酸)が生成しました。" },
-      { from: "salicylic_acid", reagent: "ch3oh_h2so4", to: "methyl_salicylate", log: "濃硫酸触媒でメタノールとエステル化し、湿布の香りのサリチル酸メチルが生成しました。" },
-
-      { from: "toluene", reagent: "mixed_acid", to: "tnt", log: "段階的に強力にニトロ化され、爆薬2,4,6-トリニトロトルエン(TNT)が生成しました。" },
-      { from: "toluene", reagent: "kmno4", to: "benzoic_acid", log: "過マンガン酸カリウムでメチル基を強く酸化し、安息香酸が生成しました。" },
-      
-      // トルエンのアルキル化（キシレン異性体分岐フラグ付き）
-      { 
-        from: "toluene", 
-        reagent: "ch3cl", 
-        to: "o_xylene", 
-        isomers: ["o_xylene", "m_xylene", "p_xylene"],
-        log: "トルエンをアルキル化(CH₃Cl + AlCl₃)し、3種類のキシレン異性体(o-, m-, p-)が生成しました！" 
-      },
-
-      { from: "o_xylene", reagent: "kmno4", to: "phthalic_acid", log: "過マンガン酸カリウムで2つのメチル基が酸化され、フタル酸が生成しました。" },
-      { from: "phthalic_acid", reagent: "heat_dehydrate", to: "phthalic_anhydride", log: "隣り合うカルボキシ基が加熱脱水し、環状の無水フタル酸が生成しました。" },
-      { from: "m_xylene", reagent: "kmno4", to: "isophthalic_acid", log: "酸化によりメタ位のジカルボン酸であるイソフタル酸が生成しました。" },
-      { from: "p_xylene", reagent: "kmno4", to: "terephthalic_acid", log: "酸化によりパラ位のテレフタル酸が生成しました。(PET合成の重要原料)" },
-
-      { from: "benzyl_alcohol", reagent: "mild_ox", to: "benzaldehyde", log: "第1級アルコールを酸化し、芳香のあるベンズアルデヒドが生成しました。" },
-      { from: "benzaldehyde", reagent: "kmno4", to: "benzoic_acid", log: "アルデヒドが酸化され、安息香酸になりました。" }
+      { from: "salicylic_acid", reagent: "ch3oh_h2so4", to: "methyl_salicylate", log: "濃硫酸触媒でメタノールとエステル化し、湿布の香りのサリチル酸メチルが生成しました。" }
     ];
 
     /* ========================================================
@@ -994,10 +1090,10 @@
     let currentCompoundId = "benzene";
     let isAssistMode = false;
     let currentCategory = "sub_add";
-    let discoveredCompounds = new Set(["benzene"]);
+    let discoveredCompounds = new Set(["benzene", "naphthalene"]);
     let currentTargetId = "toluene";
 
-    const STORAGE_KEY = "aromatic_game_save_v3";
+    const STORAGE_KEY = "aromatic_game_save_v5";
 
     function loadSavedData() {
       try {
@@ -1007,6 +1103,7 @@
           if (Array.isArray(data.discovered)) {
             discoveredCompounds = new Set(data.discovered);
             discoveredCompounds.add("benzene");
+            discoveredCompounds.add("naphthalene");
           }
         }
       } catch(e) {
@@ -1041,10 +1138,12 @@
 
     function updateTargetMission() {
       const priorityTargets = [
-        "toluene", "o_xylene", "phthalic_acid", "phthalic_anhydride",
+        "toluene", "ethylbenzene", "benzyl_alcohol", "benzaldehyde", "benzoic_acid",
+        "o_xylene", "phthalic_acid", "phthalic_anhydride",
         "m_xylene", "isophthalic_acid",
-        "p_xylene", "terephthalic_acid",
+        "p_xylene", "terephthalic_acid", "pet",
         "nitrobenzene", "aniline", "phenol", 
+        "tribromophenol", "picric_acid",
         "salicylic_acid", "acetylsalicylic_acid", "methyl_salicylate", 
         "benzene_diazonium_chloride", "p_hydroxyazobenzene", "tnt"
       ];
@@ -1061,7 +1160,7 @@
         targetEl.textContent = `${COMPOUNDS[nextTarget].name} を作ろう`;
       } else {
         currentTargetId = null;
-        targetEl.textContent = `全34種 完全制覇達成！🎉`;
+        targetEl.textContent = `全36種 完全制覇達成！🎉`;
       }
     }
 
@@ -1115,7 +1214,6 @@
       const match = TRANSITIONS.find(t => t.from === currentCompoundId && t.reagent === reagentId);
 
       if (match) {
-        // キシレン異性体の特別処理
         if (match.isomers) {
           match.isomers.forEach(id => discoveredCompounds.add(id));
           saveData();
@@ -1150,7 +1248,7 @@
         const cName = COMPOUNDS[currentCompoundId].name;
         logContainer.innerHTML = `
           <div class="log-line log-fail">【反応なし】 ${cName} に「${rInfo.name}」を加えても変化しませんでした。</div>
-          <div class="log-line log-info">別の試薬を試すか、一度ベンゼンに戻して再挑戦してみましょう。</div>
+          <div class="log-line log-info">別の試薬を試すか、ベンゼンやナフタレンに戻して再挑戦してみましょう。</div>
         `;
       }
     }
@@ -1176,6 +1274,14 @@
       updateCurrentView();
     }
 
+    function loadNaphthalene() {
+      currentCompoundId = "naphthalene";
+      document.getElementById("logContainer").innerHTML = `
+        <div class="log-line log-info">実験台に「ナフタレン」を用意しました。酸化反応を試してみましょう！</div>
+      `;
+      updateCurrentView();
+    }
+
     function showToast(msg) {
       const t = document.getElementById("toast");
       t.textContent = msg;
@@ -1187,7 +1293,7 @@
 
     function showTaskHint() {
       if (!currentTargetId) {
-        alert("おめでとうございます！全34種類の化合物をすべて合成・図鑑登録しました！");
+        alert("おめでとうございます！全36種類の化合物をすべて合成・図鑑登録しました！");
         return;
       }
       const target = COMPOUNDS[currentTargetId];
@@ -1195,22 +1301,16 @@
       
       const routeHints = {
         toluene: "ベンゼンに塩化メチル(CH₃Cl + AlCl₃)を作用させてみよう。(置換・付加タブ)",
+        ethylbenzene: "ベンゼンにエチレン(CH₂=CH₂)を付加させてみよう。(置換・付加タブ)",
+        benzyl_alcohol: "トルエンに光照射下でCl₂を作用させると側鎖塩素化・加水分解でベンジルアルコールになります。(置換・付加タブ)",
+        benzaldehyde: "ベンジルアルコールを穏やかな酸化(CuO等)で酸化してみよう。(酸化・還元タブ)",
+        benzoic_acid: "トルエン、エチルベンゼン、またはベンズアルデヒドをKMnO₄で酸化しよう。",
         o_xylene: "トルエンに塩化メチル(CH₃Cl + AlCl₃)を作用させると、3種類のキシレン異性体が同時に手に入ります！",
-        m_xylene: "トルエンに塩化メチル(CH₃Cl + AlCl₃)を作用させると手に入ります。図鑑からも呼び出せます。",
-        p_xylene: "トルエンに塩化メチル(CH₃Cl + AlCl₃)を作用させると手に入ります。図鑑からも呼び出せます。",
-        phthalic_acid: "o-キシレンをKMnO₄で酸化してみよう。(酸化・還元タブ)",
-        phthalic_anhydride: "フタル酸を加熱脱水(-H₂O)してみよう。(有機・合成タブ)",
-        isophthalic_acid: "m-キシレンを図鑑から実験台に呼び出し、KMnO₄で加熱酸化しよう。",
-        terephthalic_acid: "p-キシレンを図鑑から実験台に呼び出し、KMnO₄で加熱酸化しよう。(PETの原料)",
-        nitrobenzene: "ベンゼンに混酸(濃硝酸+濃硫酸)を加えて加熱してみよう。(置換・付加タブ)",
-        aniline: "ニトロベンゼンをスズと塩酸で還元した後、NaOHで弱塩基を遊離させよう。",
-        phenol: "クメン法（ベンゼン+プロピレン➔空気酸化➔希硫酸）またはジアゾニウム塩の温熱分解で作れます。",
-        salicylic_acid: "ナトリウムフェノキシドに高温高圧CO₂を作用させ、希塩酸で弱酸遊離させよう。",
-        acetylsalicylic_acid: "サリチル酸に無水酢酸を加えてアセチル化しよう。(有機・合成タブ)",
-        methyl_salicylate: "サリチル酸に濃硫酸触媒でメタノールを加えてエステル化しよう。(有機・合成タブ)",
-        benzene_diazonium_chloride: "アニリンに氷冷5℃以下で亜硝酸ナトリウムと塩酸を加えよう。(有機・合成タブ)",
-        p_hydroxyazobenzene: "塩化ベンゼンジアゾニウムにナトリウムフェノキシドを加えてカップリングさせよう。(有機・合成タブ)",
-        tnt: "トルエンに混酸(濃硝酸+濃硫酸)を加えて強烈にニトロ化しよう。"
+        phthalic_acid: "o-キシレンをKMnO₄で酸化、またはナフタレンをKMnO₄で酸化してみよう。",
+        phthalic_anhydride: "フタル酸を加熱脱水(-H₂O)するか、ナフタレンをV₂O₅触媒で酸化しよう。",
+        terephthalic_acid: "p-キシレンを図鑑から実験台に呼び出し、KMnO₄で加熱酸化しよう。",
+        pet: "テレフタル酸にエチレングリコールを加えて縮合重合させよう。(有機・合成タブ)",
+        tribromophenol: "フェノールに臭素水を加えてみよう。(置換・付加タブ)"
       };
 
       if (routeHints[currentTargetId]) {
@@ -1273,9 +1373,9 @@
     }
 
     function confirmResetBook() {
-      const ok = confirm("【警告】図鑑の記録をすべて初期化しますか？\n（ベンゼンのみの状態に戻り、最初からやり直せます）");
+      const ok = confirm("【警告】図鑑の記録をすべて初期化しますか？\n（ベンゼンとナフタレンのみの状態に戻り、最初からやり直せます）");
       if (ok) {
-        discoveredCompounds = new Set(["benzene"]);
+        discoveredCompounds = new Set(["benzene", "naphthalene"]);
         currentCompoundId = "benzene";
         saveData();
         closeBookModal();
