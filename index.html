@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>芳香族化合物 合成ラボ</title>
+  <title>芳香族化合物 合成ラボ 完全版</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -214,11 +214,11 @@
 
     .action-bar {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1.1fr;
       gap: 6px;
     }
     .btn {
-      padding: 10px 8px;
+      padding: 10px 4px;
       border-radius: 10px;
       font-size: 0.78rem;
       font-weight: 700;
@@ -229,6 +229,7 @@
       justify-content: center;
       gap: 4px;
       transition: all 0.15s ease;
+      white-space: nowrap;
     }
     .btn:active {
       transform: scale(0.97);
@@ -470,26 +471,42 @@
     .isomer-choice-list {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
       padding: 16px;
     }
     .isomer-choice-btn {
       background: #0f172a;
       border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 12px;
+      border-radius: 12px;
+      padding: 10px 14px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       color: #fff;
-      font-size: 0.85rem;
-      font-weight: 700;
       cursor: pointer;
-      text-align: left;
+      transition: 0.15s;
     }
     .isomer-choice-btn:active {
       border-color: var(--accent);
       background: #1e293b;
+    }
+    .isomer-btn-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 2px;
+    }
+    .isomer-btn-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .isomer-btn-sub {
+      font-size: 0.72rem;
+      color: var(--text-sub);
+      white-space: nowrap;
     }
 
     .toast {
@@ -517,7 +534,7 @@
 
   <header>
     <div class="title">
-      <span>⬡</span> 芳香族合成ラボ
+      <span>⬡</span> 芳香族合成ラボ 完全版
     </div>
     <div class="mode-toggle-wrap">
       <span>アシスト</span>
@@ -608,28 +625,8 @@
       <div style="padding:10px 16px; font-size:0.75rem; color:var(--text-sub); border-bottom:1px solid var(--card-border);">
         トルエンのアルキル化により3種類のキシレン異性体（o-, m-, p-）が生成し、<b>すべて図鑑に登録</b>されました！続けて実験台に乗せる異性体を選択してください：
       </div>
-      <div class="isomer-choice-list">
-        <button class="isomer-choice-btn" onclick="chooseIsomer('o_xylene')">
-          <div style="width:40px;height:40px;">${makeCompoundSvg('o_xylene')}</div>
-          <div>
-            <div>o-キシレン (オルト体)</div>
-            <div style="font-size:0.7rem; color:var(--text-sub);">酸化するとフタル酸になります</div>
-          </div>
-        </button>
-        <button class="isomer-choice-btn" onclick="chooseIsomer('m_xylene')">
-          <div style="width:40px;height:40px;">${makeCompoundSvg('m_xylene')}</div>
-          <div>
-            <div>m-キシレン (メタ体)</div>
-            <div style="font-size:0.7rem; color:var(--text-sub);">酸化するとイソフタル酸になります</div>
-          </div>
-        </button>
-        <button class="isomer-choice-btn" onclick="chooseIsomer('p_xylene')">
-          <div style="width:40px;height:40px;">${makeCompoundSvg('p_xylene')}</div>
-          <div>
-            <div>p-キシレン (パラ体)</div>
-            <div style="font-size:0.7rem; color:var(--text-sub);">酸化するとテレフタル酸(PET原料)になります</div>
-          </div>
-        </button>
+      <div class="isomer-choice-list" id="isomerChoiceContainer">
+        <!-- JSでSVGと整ったテキストが動的に注入されます -->
       </div>
     </div>
   </div>
@@ -638,10 +635,8 @@
 
   <script>
     /* ========================================================
-       1. SVGグラフィック定義（ナフタレン・無水フタル酸・PET等 完全修正版）
+       1. SVGグラフィック定義（ナフタレン正六角形比率調整版）
        ======================================================== */
-    // 標準ベンゼン環：中心(60, 60)、半径24
-    // 頂点: 1位(60,36), 2位(80.8,48), 3位(80.8,72), 4位(60,84), 5位(39.2,72), 6位(39.2,48)
     const SVG_CORE = `
       <polygon points="60,36 81,48 81,72 60,84 39,72 39,48" stroke="#38bdf8" stroke-width="2.5" fill="none"/>
       <circle cx="60" cy="60" r="14" stroke="#38bdf8" stroke-width="2.2" fill="none"/>
@@ -655,12 +650,15 @@
           return `${base}${SVG_CORE}${end}`;
 
         case "naphthalene":
-          // 正確な2縮合環：左環中心(40,60), 右環中心(80,60), 共有辺(60,42)-(60,78)
+          // 正確な正六角形比率のナフタレン
+          // 左環: 中心(42,60) R=20.5 -> 頂点: (32,42) (53,42) (63,60) (53,78) (32,78) (21,60)
+          // 右環: 中心(78,60) R=20.5 -> 頂点: (74,42) (95,42) (105,60) (95,78) (74,78) (63,60)
+          // 共有辺: (63,42)-(63,78) を水平対向（共有頂点 63,42 と 63,78）
           return `${base}
-            <polygon points="40,24 60,36 60,84 40,96 20,84 20,36" stroke="#38bdf8" stroke-width="2.3" fill="none"/>
-            <polygon points="80,24 100,36 100,84 80,96 60,84 60,36" stroke="#38bdf8" stroke-width="2.3" fill="none"/>
-            <circle cx="40" cy="60" r="13" stroke="#38bdf8" stroke-width="2" fill="none"/>
-            <circle cx="80" cy="60" r="13" stroke="#38bdf8" stroke-width="2" fill="none"/>
+            <polygon points="41,43 63,43 74,60 63,77 41,77 30,60" stroke="#38bdf8" stroke-width="2.3" fill="none"/>
+            <polygon points="63,43 85,43 96,60 85,77 63,77 74,60" stroke="#38bdf8" stroke-width="2.3" fill="none"/>
+            <circle cx="48.5" cy="60" r="10" stroke="#38bdf8" stroke-width="1.8" fill="none"/>
+            <circle cx="77.5" cy="60" r="10" stroke="#38bdf8" stroke-width="1.8" fill="none"/>
           ${end}`;
 
         case "toluene":
@@ -728,7 +726,6 @@
           ${end}`;
 
         case "tribromophenol":
-          // 正確な2,4,6-トリブロモフェノール: 1位OH, 2位Br(81,48), 4位Br(60,84), 6位Br(39,48)
           return `${base}${SVG_CORE}
             <line x1="60" y1="36" x2="60" y2="24" stroke="#38bdf8" stroke-width="2.5"/>
             <text x="60" y="15" fill="#34d399" font-size="9" text-anchor="middle" font-weight="bold" dominant-baseline="central">OH</text>
@@ -807,17 +804,13 @@
 
         case "p_hydroxyazobenzene":
           return `${base}
-            <!-- 左ベンゼン環 -->
             <polygon points="26,45 38,38 38,52 26,59 14,52 14,38" stroke="#38bdf8" stroke-width="2" fill="none"/>
             <circle cx="26" cy="48.5" r="7.5" stroke="#38bdf8" stroke-width="1.6" fill="none"/>
-            <!-- アゾ結合 -N=N- -->
             <line x1="38" y1="45" x2="48" y2="45" stroke="#38bdf8" stroke-width="2"/>
             <text x="60" y="46" fill="#fbbf24" font-size="7.5" font-weight="bold" text-anchor="middle" dominant-baseline="central">-N=N-</text>
             <line x1="72" y1="45" x2="82" y2="45" stroke="#38bdf8" stroke-width="2"/>
-            <!-- 右ベンゼン環 -->
             <polygon points="94,45 106,38 106,52 94,59 82,52 82,38" stroke="#38bdf8" stroke-width="2" fill="none"/>
             <circle cx="94" cy="48.5" r="7.5" stroke="#38bdf8" stroke-width="1.6" fill="none"/>
-            <!-- パラ位 OH -->
             <line x1="94" y1="59" x2="94" y2="70" stroke="#38bdf8" stroke-width="2"/>
             <text x="94" y="80" fill="#34d399" font-size="8.5" text-anchor="middle" font-weight="bold" dominant-baseline="central">OH</text>
           ${end}`;
@@ -864,14 +857,12 @@
           ${end}`;
 
         case "phthalic_anhydride":
-          // 正確な無水フタル酸（五員環酸無水物）：81,48 と 81,72 から酸素架橋へ
           return `${base}${SVG_CORE}
             <line x1="81" y1="48" x2="94" y2="48" stroke="#38bdf8" stroke-width="2.2"/>
             <line x1="81" y1="72" x2="94" y2="72" stroke="#38bdf8" stroke-width="2.2"/>
             <line x1="94" y1="48" x2="103" y2="60" stroke="#f43f5e" stroke-width="2.2"/>
             <line x1="94" y1="72" x2="103" y2="60" stroke="#f43f5e" stroke-width="2.2"/>
             <circle cx="103" cy="60" r="3" fill="#f43f5e"/>
-            <!-- カルボニル =O -->
             <line x1="94" y1="48" x2="99" y2="38" stroke="#f43f5e" stroke-width="2"/>
             <line x1="94" y1="72" x2="99" y2="82" stroke="#f43f5e" stroke-width="2"/>
             <text x="103" y="36" fill="#f43f5e" font-size="7" font-weight="bold" dominant-baseline="central">O</text>
@@ -896,19 +887,15 @@
           ${end}`;
 
         case "pet":
-          // 正確なPETユニット構造式
           return `${base}
             <text x="12" y="55" fill="#94a3b8" font-size="20" font-weight="bold" dominant-baseline="central">[</text>
             <text x="108" y="55" fill="#94a3b8" font-size="20" font-weight="bold" dominant-baseline="central">]</text>
             <text x="114" y="65" fill="#38bdf8" font-size="8" font-weight="bold">n</text>
-            <!-- 左エステル -->
             <text x="24" y="55" fill="#38bdf8" font-size="6.5" font-weight="bold" dominant-baseline="central">-CO-</text>
-            <!-- ベンゼン環 -->
             <polygon points="60,42 70,48 70,62 60,68 50,62 50,48" stroke="#38bdf8" stroke-width="1.8" fill="none"/>
             <circle cx="60" cy="55" r="7" stroke="#38bdf8" stroke-width="1.5" fill="none"/>
             <line x1="38" y1="55" x2="50" y2="55" stroke="#38bdf8" stroke-width="1.8"/>
             <line x1="70" y1="55" x2="78" y2="55" stroke="#38bdf8" stroke-width="1.8"/>
-            <!-- 右エチレングリコール鎖 -->
             <text x="94" y="55" fill="#34d399" font-size="6" font-weight="bold" dominant-baseline="central">COO-Et-O-</text>
             <text x="60" y="90" fill="#38bdf8" font-size="7.5" text-anchor="middle" font-weight="bold">ポリエチレンテレフタラート</text>
           ${end}`;
@@ -1093,7 +1080,7 @@
     let discoveredCompounds = new Set(["benzene", "naphthalene"]);
     let currentTargetId = "toluene";
 
-    const STORAGE_KEY = "aromatic_game_save_v5";
+    const STORAGE_KEY = "aromatic_game_save_v6";
 
     function loadSavedData() {
       try {
@@ -1253,7 +1240,32 @@
       }
     }
 
+    // キシレン選択モーダルを動的生成（文字列被り解消・中央揃え）
     function openIsomerModal() {
+      const container = document.getElementById("isomerChoiceContainer");
+      container.innerHTML = `
+        <button class="isomer-choice-btn" onclick="chooseIsomer('o_xylene')">
+          <div style="width:48px;height:48px;flex-shrink:0;">${makeCompoundSvg('o_xylene')}</div>
+          <div class="isomer-btn-text">
+            <span class="isomer-btn-title">o-キシレン (オルト体)</span>
+            <span class="isomer-btn-sub">酸化するとフタル酸になります</span>
+          </div>
+        </button>
+        <button class="isomer-choice-btn" onclick="chooseIsomer('m_xylene')">
+          <div style="width:48px;height:48px;flex-shrink:0;">${makeCompoundSvg('m_xylene')}</div>
+          <div class="isomer-btn-text">
+            <span class="isomer-btn-title">m-キシレン (メタ体)</span>
+            <span class="isomer-btn-sub">酸化するとイソフタル酸になります</span>
+          </div>
+        </button>
+        <button class="isomer-choice-btn" onclick="chooseIsomer('p_xylene')">
+          <div style="width:48px;height:48px;flex-shrink:0;">${makeCompoundSvg('p_xylene')}</div>
+          <div class="isomer-btn-text">
+            <span class="isomer-btn-title">p-キシレン (パラ体)</span>
+            <span class="isomer-btn-sub">酸化するとテレフタル酸(PET原料)になります</span>
+          </div>
+        </button>
+      `;
       document.getElementById("isomerModal").classList.add("open");
     }
 
